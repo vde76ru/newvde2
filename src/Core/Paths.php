@@ -1,10 +1,19 @@
 <?php
+// src/Core/Paths.php
 namespace App\Core;
 
+/**
+ * Централизованное управление путями приложения
+ */
 class Paths
 {
     private static ?string $basePath = null;
-    
+
+    // Относительные пути для URL
+    const ASSETS_URL = '/assets/dist';
+    const IMAGES_URL = '/images';
+    const UPLOADS_URL = '/uploads';
+
     private static function getBasePath(): string
     {
         if (self::$basePath === null) {
@@ -13,7 +22,10 @@ class Paths
         }
         return self::$basePath;
     }
-    
+
+    /**
+     * Получить полный путь к файлу
+     */
     public static function get(string $type, string $path = ''): string
     {
         $basePath = match($type) {
@@ -27,9 +39,23 @@ class Paths
             'services' => self::getBasePath() . '/src/Services',
             default => self::getBasePath()
         };
-        
+
         return $basePath . ($path ? '/' . ltrim($path, '/') : '');
     }
+
+    /**
+     * Получить URL для ассетов
+     */
+    public static function asset(string $path): string
+    {
+        return self::ASSETS_URL . '/' . ltrim($path, '/');
+    }
     
-    // Остальные методы без изменений
+    /**
+     * Проверить существование пути
+     */
+    public static function exists(string $type, string $path = ''): bool
+    {
+        return file_exists(self::get($type, $path));
+    }
 }
